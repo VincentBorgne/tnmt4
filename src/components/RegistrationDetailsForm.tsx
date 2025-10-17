@@ -140,6 +140,7 @@ const RegistrationDetailsForm = ({
         birthdate: personalData.birthdate,
         nationality: personalData.nationality,
         playerLevel: data.playerLevel,
+		totalAmount: totalFees,  // ADD THIS LINE
         rankings: data.rankings.filter(r => r.source && r.level),
         categories: [
           {
