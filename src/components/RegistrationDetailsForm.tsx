@@ -8,6 +8,9 @@ import JerseySizesModal from './JerseySizesModal';
 import RegistrationConfirmationModal from './RegistrationConfirmationModal';
 import { registrationApi } from '../api/config';
 
+
+// Important comment
+
 const RegistrationDetailsForm = ({
   personalData,
   tournamentId,
@@ -499,7 +502,8 @@ const RegistrationDetailsForm = ({
               </div>
             )}
           </div>
-			{/*
+		  
+			{/*  
           <div className="mt-6">
             <div className="flex items-start">
               <div className="flex items-center h-5">
