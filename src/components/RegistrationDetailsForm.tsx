@@ -8,9 +8,6 @@ import JerseySizesModal from './JerseySizesModal';
 import RegistrationConfirmationModal from './RegistrationConfirmationModal';
 import { registrationApi } from '../api/config';
 
-
-// Important comment
-
 const RegistrationDetailsForm = ({
   personalData,
   tournamentId,
@@ -72,7 +69,7 @@ const RegistrationDetailsForm = ({
   const watchTournaments = watch('tournaments');
 
   const tournamentSources = ['Instagram', 'Facebook', 'Friend', 'Club', 'Other'];
-  const jerseySizes = ['Men XS', 'Men S', 'Men M', 'Men L', 'Men XL', 'Men XXL', 'Men 2XL','Women XXS','Women XS', 'Women S', 'Women M', 'Women L', 'Women XL', 'Women XXL'];
+  const jerseySizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const JERSEY_FEE = 60;
   const DISCOUNT_TOURNAMENT_ID = 'abpxpress';
 
@@ -140,14 +137,13 @@ const RegistrationDetailsForm = ({
         birthdate: personalData.birthdate,
         nationality: personalData.nationality,
         playerLevel: data.playerLevel,
-		totalAmount: totalFees,  // ADD THIS LINE
         rankings: data.rankings.filter(r => r.source && r.level),
         categories: [
           {
             category: data.category,
             categoryLevel: selectedCategoryLevel,
             partnerWhatsapp: partnerWhatsapp || undefined,
-            payForBoth: data.payForBoth || false,
+            payForBoth: false,
           }
         ],
         tournamentData: {
@@ -168,7 +164,7 @@ const RegistrationDetailsForm = ({
           category: data.secondCategory,
           categoryLevel: selectedSecondCategoryLevel,
           partnerWhatsapp: secondPartnerWhatsapp || undefined,
-          payForBoth: data.secondPayForBoth || false,
+          payForBoth: false,
         });
       }
 
@@ -444,9 +440,16 @@ const RegistrationDetailsForm = ({
               style={{ backgroundColor: '#f3f4f6' }}
             >
               <option value="">Select category level</option>
-              {categoryLevels.map(level => (
-                <option key={level.id} value={level.id}>{level.name}</option>
-              ))}
+{categoryLevels
+  .filter(level => {
+    const category = watch('category');
+    if (level.id === 'elite' && category !== 'mixed') return false;
+    if (level.id === 'platinum' && category === 'women') return false;
+    return true;
+  })
+  .map(level => (
+    <option key={level.id} value={level.id}>{level.name}</option>
+  ))}
             </select>
             {selectedLevelDetails && (
               <div className="mt-4 bg-gray-50 p-4 rounded-md border border-gray-200">
@@ -503,8 +506,7 @@ const RegistrationDetailsForm = ({
               </div>
             )}
           </div>
-		  
-			{/*  
+			{/*
           <div className="mt-6">
             <div className="flex items-start">
               <div className="flex items-center h-5">
@@ -569,9 +571,16 @@ const RegistrationDetailsForm = ({
                     style={{ backgroundColor: '#f3f4f6' }}
                   >
                     <option value="">Select category level</option>
-                    {categoryLevels.map(level => (
-                      <option key={level.id} value={level.id}>{level.name}</option>
-                    ))}
+{categoryLevels
+  .filter(level => {
+    const category = watch('secondCategory');
+    if (level.id === 'elite' && category !== 'mixed') return false;
+    if (level.id === 'platinum' && category === 'women') return false;
+    return true;
+  })
+  .map(level => (
+    <option key={level.id} value={level.id}>{level.name}</option>
+  ))}
                   </select>
                   {selectedSecondLevelDetails && (
                     <div className="mt-4 bg-gray-50 p-4 rounded-md border border-gray-200">
@@ -682,14 +691,13 @@ const RegistrationDetailsForm = ({
                 <ShirtIcon className="h-4 w-4 mr-1" />
                 View jersey design
               </button>
-              {/*<button 
+              <button 
                 type="button" 
                 onClick={() => setShowJerseySizesModal(true)} 
                 className="text-xs text-blue-600 hover:text-blue-800"
               >
                 View jersey sizes
               </button>
-			  */}
             </div>
           </div>
           <div className="mt-4 space-y-4">
