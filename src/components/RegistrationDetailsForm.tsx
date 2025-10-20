@@ -63,6 +63,7 @@ const RegistrationDetailsForm = ({
   const [secondPartnerWhatsapp, setSecondPartnerWhatsapp] = useState('');
   const [registerSecondCategory, setRegisterSecondCategory] = useState(false);
   const [totalFees, setTotalFees] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const watchGender = personalData.gender;
   const watchJerseys = watch('jerseys');
@@ -126,62 +127,69 @@ const RegistrationDetailsForm = ({
     }
   ];
 
-  const handleFormSubmit = async (data) => {
-    try {
-      const registrationData = {
-        email: personalData.email,
-        whatsapp: personalData.whatsapp,
-        fullName: personalData.fullName,
-        displayName: personalData.displayName,
-        gender: personalData.gender,
-        birthdate: personalData.birthdate,
-        nationality: personalData.nationality,
-        playerLevel: data.playerLevel,
-        rankings: data.rankings.filter(r => r.source && r.level),
-		totalAmount: totalFees,  // ADD THIS LINE HERE
-        categories: [
-          {
-            category: data.category,
-            categoryLevel: selectedCategoryLevel,
-            partnerWhatsapp: partnerWhatsapp || undefined,
-            payForBoth: false,
-          }
-        ],
-        tournamentData: {
-          source: data.source,
-          tournaments: data.tournaments || [],
-          communityTournaments: data.communityTournaments || '',
-          jerseys: data.jerseys.filter(j => j.size),
-          foodAllergies: data.foodAllergies || '',
-          specialRequests: data.specialRequests || '',
-          termsAccepted: data.termsAccepted,
-          refundPolicy: data.refundPolicy,
-          mediaConsent: data.mediaConsent,
-        }
-      };
-
-      if (registerSecondCategory && data.secondCategory && selectedSecondCategoryLevel) {
-        registrationData.categories.push({
-          category: data.secondCategory,
-          categoryLevel: selectedSecondCategoryLevel,
-          partnerWhatsapp: secondPartnerWhatsapp || undefined,
+// Replace the handleFormSubmit function (around line 180)
+const handleFormSubmit = async (data) => {
+  // Prevent double submission
+  if (isSubmitting) return;
+  
+  setIsSubmitting(true);
+  
+  try {
+    const registrationData = {
+      email: personalData.email,
+      whatsapp: personalData.whatsapp,
+      fullName: personalData.fullName,
+      displayName: personalData.displayName,
+      gender: personalData.gender,
+      birthdate: personalData.birthdate,
+      nationality: personalData.nationality,
+      playerLevel: data.playerLevel,
+      rankings: data.rankings.filter(r => r.source && r.level),
+      totalAmount: totalFees,
+      categories: [
+        {
+          category: data.category,
+          categoryLevel: selectedCategoryLevel,
+          partnerWhatsapp: partnerWhatsapp || undefined,
           payForBoth: false,
-        });
+        }
+      ],
+      tournamentData: {
+        source: data.source,
+        tournaments: data.tournaments || [],
+        communityTournaments: data.communityTournaments || '',
+        jerseys: data.jerseys.filter(j => j.size),
+        foodAllergies: data.foodAllergies || '',
+        specialRequests: data.specialRequests || '',
+        termsAccepted: data.termsAccepted,
+        refundPolicy: data.refundPolicy,
+        mediaConsent: data.mediaConsent,
       }
+    };
 
-      console.log('Submitting registration:', registrationData);
-      const response = await registrationApi.create(tournamentId, registrationData);
-      console.log('Registration successful:', response);
-      
-      setShowConfirmationModal(true);
-      setTimeout(() => {
-        window.location.href = 'https://aimsclub.com';
-      }, 3000);
-    } catch (error) {
-      console.error('Registration failed:', error);
-      alert('Registration failed: ' + (error.response?.data?.message || error.message));
+    if (registerSecondCategory && data.secondCategory && selectedSecondCategoryLevel) {
+      registrationData.categories.push({
+        category: data.secondCategory,
+        categoryLevel: selectedSecondCategoryLevel,
+        partnerWhatsapp: secondPartnerWhatsapp || undefined,
+        payForBoth: false,
+      });
     }
-  };
+
+    console.log('Submitting registration:', registrationData);
+    const response = await registrationApi.create(tournamentId, registrationData);
+    console.log('Registration successful:', response);
+    
+    setShowConfirmationModal(true);
+    setTimeout(() => {
+      window.location.href = 'https://aimsclub.com';
+    }, 3000);
+  } catch (error) {
+    console.error('Registration failed:', error);
+    alert('Registration failed: ' + (error.response?.data?.message || error.message));
+    setIsSubmitting(false); // Re-enable button on error
+  }
+};
 
   const handlePartnerSearch = async () => {
     if (!partnerWhatsapp) return;
@@ -292,31 +300,45 @@ const RegistrationDetailsForm = ({
         {/* Skill Level Section */}
         <div className="border-t border-gray-200 pt-6">
           <h3 className="text-lg font-medium text-gray-700">Skill Level</h3>
-          <div className="mt-4">
-            <div className="flex items-center mb-2">
-              <label htmlFor="playerLevel" className="block text-sm font-medium text-gray-700">
-                Estimate your level
-              </label>
-              <button 
-                type="button" 
-                onClick={() => setShowLevelInfo(true)} 
-                className="ml-2 text-xs text-blue-600 hover:text-blue-800"
-              >
-                View level table
-              </button>
-            </div>
-            <input 
-              id="playerLevel" 
-              type="text" 
-              {...register('playerLevel', { required: 'Your level is required' })} 
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" 
-              style={{ backgroundColor: '#f3f4f6' }} 
-            />
-            {errors.playerLevel && (
-              <p className="mt-1 text-sm text-red-600">{errors.playerLevel.message}</p>
-            )}
-          </div>
-        </div>
+		  
+<div className="mt-4">
+  <div className="flex items-center mb-2">
+    <label htmlFor="playerLevel" className="block text-sm font-medium text-gray-700">
+      Estimate your level
+    </label>
+    <button 
+      type="button" 
+      onClick={() => setShowLevelInfo(true)} 
+      className="ml-2 text-xs text-blue-600 hover:text-blue-800"
+    >
+      View level table
+    </button>
+  </div>
+  <select 
+    id="playerLevel" 
+    {...register('playerLevel', { required: 'Your level is required' })} 
+    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" 
+    style={{ backgroundColor: '#f3f4f6' }}
+  >
+    <option value="">Select your level</option>
+    <option value="0.5">0.5 Less than 6 months. No technique or tactics.</option>
+    <option value="1.0">1.0 Les than 12 months. No technique or tactics</option>
+    <option value="1.5">1.5 Rally and return at low speed</option>
+    <option value="2.0">2.0 2 or more game a month, Rally and return at low speed</option>
+    <option value="2.5">2.5 Controls direction at normal pace</option>
+    <option value="3.0">3.0 Dominate most strokes, play flat and drives the ball</option>
+    <option value="3.5">3.5 Dominate most strokes, play slice or flat, many unforced errors</option>
+    <option value="4.0">4.0 Master most strokes,Few unforced errors</option>
+    <option value="4.5">4.5 Master most strokes,Controls directiond but hard to close the point</option>
+    <option value="5.0">5.0 Medium technique and high tactical mindset. Ready to play at good pace</option>
+    <option value="5.5">5.5 Dominated  technical and tactical kills. Plays at high pace/option>
+    <option value="6.0">6.0 Avanced/Pro players</option>
+  </select>
+  {errors.playerLevel && (
+    <p className="mt-1 text-sm text-red-600">{errors.playerLevel.message}</p>
+  )}
+</div>
+		</div>
 
         {/* Rankings Section */}
         <div className="border-t border-gray-200 pt-6">
@@ -917,12 +939,17 @@ const RegistrationDetailsForm = ({
             >
               Back
             </button>
-            <button 
-              type="submit" 
-              className="py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-black bg-[#C4E42E] hover:bg-[#b3d129] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C4E42E]"
-            >
-              Confirm Registration
-            </button>
+<button 
+  type="submit" 
+  disabled={isSubmitting}
+  className={`py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium ${
+    isSubmitting 
+      ? 'text-gray-500 bg-gray-300 cursor-not-allowed' 
+      : 'text-black bg-[#C4E42E] hover:bg-[#b3d129]'
+  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C4E42E]`}
+>
+  {isSubmitting ? 'Processing...' : 'Confirm Registration'}
+</button>
           </div>
         </div>
       </form>
