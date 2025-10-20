@@ -20,7 +20,7 @@ interface Registration {
 
 // Team tile component
 const TeamTile = ({ team }: { team: Player[] }) => {
-  const totalLevel = team.reduce((sum, player) => sum + player.level, 0);
+  const totalLevel = team.reduce((sum, player) => sum + (player.level || 0), 0);
   
   return (
     <div className="bg-white rounded-lg shadow-md p-4 mb-4">
@@ -37,7 +37,7 @@ const TeamTile = ({ team }: { team: Player[] }) => {
             </div>
             <span className="text-sm font-medium">{player.name}</span>
             <span className="text-xs text-gray-500 ml-auto">
-              {player.level.toFixed(1)}
+              {player.level ? player.level.toFixed(1) : 'N/A'}
             </span>
             <div>
               {player.paid ? (
@@ -51,6 +51,11 @@ const TeamTile = ({ team }: { team: Player[] }) => {
       </div>
     </div>
   );
+};
+
+// Helper function to capitalize first letter
+const capitalize = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 const RegistrationReport = () => {
@@ -83,8 +88,8 @@ const RegistrationReport = () => {
   const filteredRegistrations = useMemo(() => {
     return registrations.filter((registration) => {
       const matchesCategory =
-        !categoryFilter || registration.category === categoryFilter;
-      const matchesLevel = !levelFilter || registration.level === levelFilter;
+        !categoryFilter || registration.category.toLowerCase() === categoryFilter.toLowerCase();
+      const matchesLevel = !levelFilter || registration.level.toLowerCase() === levelFilter.toLowerCase();
       return matchesCategory && matchesLevel;
     });
   }, [registrations, categoryFilter, levelFilter]);
@@ -93,7 +98,7 @@ const RegistrationReport = () => {
   const groupedRegistrations = useMemo(() => {
     const groups: Record<string, Registration[]> = {};
     filteredRegistrations.forEach((registration) => {
-      const groupKey = `${registration.category} ${registration.level}`;
+      const groupKey = `${capitalize(registration.category)} ${capitalize(registration.level)}`;
       if (!groups[groupKey]) {
         groups[groupKey] = [];
       }
@@ -245,7 +250,7 @@ const RegistrationReport = () => {
               ([groupKey, registrations]) => (
                 <div key={groupKey}>
                   <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                    {groupKey}
+                    {groupKey} ({registrations.length})
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {registrations.map((registration) => (
