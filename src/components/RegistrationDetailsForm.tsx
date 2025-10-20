@@ -323,15 +323,15 @@ const handleFormSubmit = async (data) => {
     <option value="">Select your level</option>
     <option value="0.5">0.5 Less than 6 months. No technique or tactics.</option>
     <option value="1.0">1.0 Les than 12 months. No technique or tactics</option>
-    <option value="1.5">1.5 Rally and return at low speed</option>
-    <option value="2.0">2.0 2 or more game a month, Rally and return at low speed</option>
+    <option value="1.5">1.5 Rally and return at low speed. Plays 2 games a month</option>
+    <option value="2.0">2.0 More than 2 games a month, Rally and return at low speed</option>
     <option value="2.5">2.5 Controls direction at normal pace</option>
-    <option value="3.0">3.0 Dominate most strokes, play flat and drives the ball</option>
-    <option value="3.5">3.5 Dominate most strokes, play slice or flat, many unforced errors</option>
-    <option value="4.0">4.0 Master most strokes,Few unforced errors</option>
-    <option value="4.5">4.5 Master most strokes,Controls directiond but hard to close the point</option>
+    <option value="3.0">3.0 Dominates most strokes, play flat and drives the ball</option>
+    <option value="3.5">3.5 Dominates most strokes, play slice or flat, many unforced errors</option>
+    <option value="4.0">4.0 Masters most strokes,Few unforced errors</option>
+    <option value="4.5">4.5 Masters most strokes, Controls direction but difficulty to close the point</option>
     <option value="5.0">5.0 Medium technique and high tactical mindset. Ready to play at good pace</option>
-    <option value="5.5">5.5 Dominated  technical and tactical kills. Plays at high pace/option>
+    <option value="5.5">5.5 Dominates technical and tactical kills. Plays at high pace</option>
     <option value="6.0">6.0 Avanced/Pro players</option>
   </select>
   {errors.playerLevel && (
