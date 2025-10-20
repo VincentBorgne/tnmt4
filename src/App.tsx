@@ -1,8 +1,7 @@
-// src/App.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import TournamentRegistration from './components/TournamentRegistration';
-// import RegistrationReport from './components/RegistrationReport'; // Add when you create it
+import RegistrationReport from './components/RegistrationReport';
 
 export function App() {
   return (
@@ -14,9 +13,8 @@ export function App() {
             <Route path="/" element={<Navigate to="/register/aims-nov-2025" replace />} />
             <Route path="/register/:tournamentId" element={<TournamentRegistration />} />
             
-            {/* Report routes (add later) */}
-            {/* <Route path="/report/:tournamentId" element={<RegistrationReport />} /> */}
-            {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+            {/* Report route */}
+            <Route path="/registrations" element={<RegistrationReport />} />
           </Routes>
         </div>
       </div>

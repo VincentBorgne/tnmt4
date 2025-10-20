@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4174';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +8,9 @@ export const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Tournament ID from environment
+export const TOURNAMENT_ID = import.meta.env.VITE_TOURNAMENT_ID || 'aims-nov-2025';
 
 // New tournament registration API
 export const registrationApi = {
@@ -29,6 +32,12 @@ export const registrationApi = {
   // Get stats (for admin)
   getStats: async (tournamentId: string) => {
     const response = await api.get(`/api/registration/${tournamentId}/stats`);
+    return response.data;
+  },
+
+  // Get registration report
+  getReport: async (tournamentId: string) => {
+    const response = await api.get(`/api/registration/${tournamentId}/report`);
     return response.data;
   },
 };
