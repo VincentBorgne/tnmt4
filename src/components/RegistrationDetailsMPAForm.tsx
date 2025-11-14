@@ -250,8 +250,11 @@ const RegistrationDetailsMPAForm = ({
           <h3 className="text-lg font-medium text-gray-700 mb-4">Partner Information</h3>
           <div className="bg-yellow-50 p-4 rounded-md border border-yellow-100 mb-4">
             <p className="text-sm text-gray-700">
-              If you have a partner, enter their WhatsApp number to link your registrations.
+              If you have a partner, enter their WhatsApp number to link your registrations. 
               Leave empty if you're looking for a partner.
+            </p>
+            <p className="text-sm text-red-600 font-medium mt-2">
+              ⚠️ Your partner needs to register separately and refer you as partner by your WhatsApp number
             </p>
           </div>
           
@@ -280,7 +283,7 @@ const RegistrationDetailsMPAForm = ({
               <p className={`mt-2 text-sm ${partnerSearchResult.found ? 'text-green-600' : 'text-red-600'}`}>
                 {partnerSearchResult.found 
                   ? `✓ Partner found: ${partnerSearchResult.name}`
-                  : '✗ Partner not found. They need to register first or you can proceed without a partner.'}
+                  : '✗ Partner not found. Ask your partner to register, leave his whatsapp here for reference.'}
               </p>
             )}
           </div>
