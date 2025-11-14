@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { SearchIcon } from 'lucide-react';
+import { InfoIcon, SearchIcon } from 'lucide-react';
 import countries from 'world-countries';
 import JerseySizesModal from './JerseySizesModal';
 import RegistrationConfirmationModal from './RegistrationConfirmationModal';
