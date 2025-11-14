@@ -956,7 +956,10 @@ const handleFormSubmit = async (data) => {
 
       {/* Modals */}
       {showLevelInfo && (
-        <LevelInfoModal onClose={() => setShowLevelInfo(false)} />
+        <LevelInfoModal 
+          onClose={() => setShowLevelInfo(false)} 
+          tournamentId={tournamentId}
+        />
       )}
       {showTshirtModal && (
         <TshirtModal onClose={() => setShowTshirtModal(false)} />

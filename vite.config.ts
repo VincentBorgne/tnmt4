@@ -8,6 +8,9 @@ export default defineConfig({
     port: 5175,
     host: '0.0.0.0',
     allowedHosts: [
+	  'regmgr.ydev.thescorehub.com',
+	  'regmgr.xdev.thescorehub.com',
+	  'regmgr.thescorehub.com',
       'aims.ydev.thescorehub.com',
       'aims.xdev.thescorehub.com',
       'localhost',

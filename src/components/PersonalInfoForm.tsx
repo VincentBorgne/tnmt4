@@ -4,29 +4,42 @@ import { InfoIcon } from 'lucide-react';
 import countries from 'world-countries';
 
 const PersonalInfoForm = ({
-  onSubmit
+  onSubmit,
+  tournamentSlug
 }) => {
+  // Check if this is MPA tournament (Malaysia nationals only)
+  const isMalaysiaOnly = tournamentSlug === 'mpa-dec-2025';
+  
   const {
     register,
     handleSubmit,
     formState: {
       errors
     }
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      nationality: isMalaysiaOnly ? 'MY' : '' // Pre-select MY for MPA
+    }
+  });
+  
   // This function ensures we're properly handling the form submission
   const onSubmitHandler = data => {
     console.log('Form data submitted:', data);
     onSubmit(data);
   };
 
-// Transform to format you need
-const countriesList = countries
-  .map(country => ({
-    code: country.cca2, // 2-letter ISO code
-    name: country.name.common
-  }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+  // Transform to format you need
+  const countriesList = countries
+    .map(country => ({
+      code: country.cca2, // 2-letter ISO code
+      name: country.name.common
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
   
+  // Filter to Malaysia only if MPA tournament
+  const availableCountries = isMalaysiaOnly 
+    ? countriesList.filter(country => country.code === 'MY')
+    : countriesList;
   
   
   return <div>
@@ -34,6 +47,11 @@ const countriesList = countries
         <h2 className="text-xl font-semibold text-gray-700">
           Welcome, please complete your profile first
         </h2>
+        {isMalaysiaOnly && (
+          <p className="mt-2 text-sm text-gray-600">
+            This tournament is for Malaysian nationals only.
+          </p>
+        )}
       </div>
       <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-6">
         <div>
@@ -145,19 +163,25 @@ const countriesList = countries
         </div>
         <div>
           <label htmlFor="nationality" className="block text-sm font-medium text-gray-700">
-            Nationality (2 letter ISO code)
+            Nationality {isMalaysiaOnly && '(Reserved to Malaysian Nationals)'}
           </label>
-          <select id="nationality" {...register('nationality', {
-          required: 'Nationality is required'
-        })} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" style={{
-          backgroundColor: '#f3f4f6'
-        }}>
-            <option value="">Select nationality</option>
-{countriesList.map(country => (
-  <option key={country.code} value={country.code}>
-    {country.name} ({country.code})
-  </option>
-))}
+          <select 
+            id="nationality" 
+            {...register('nationality', {
+              required: 'Nationality is required'
+            })} 
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" 
+            style={{
+              backgroundColor: '#f3f4f6'
+            }}
+            disabled={isMalaysiaOnly} // Disable dropdown for MPA (only Malaysia)
+          >
+            {!isMalaysiaOnly && <option value="">Select nationality</option>}
+            {availableCountries.map(country => (
+              <option key={country.code} value={country.code}>
+                {country.name} ({country.code})
+              </option>
+            ))}
           </select>
           {errors.nationality && <p className="mt-1 text-sm text-red-600">
               {errors.nationality.message}

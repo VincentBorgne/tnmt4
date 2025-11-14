@@ -1,14 +1,36 @@
 import React from 'react';
 import { XIcon } from 'lucide-react';
-import levelTableImage from '../assets/level-table.jpeg'; // Or .jpg, whatever your file is named
+import aimsLevelTable from '../assets/level-table.jpeg'; // AIMS level table
+import mpaLevelTable from '../assets/mpa-level-table.png'; // MPA level table
+import defaultLevelTable from '../assets/default-level-table.png'; // Default fallback
 
-const LevelInfoModal = ({ onClose }) => {
+const LevelInfoModal = ({ onClose, tournamentId }) => {
+  // Select the appropriate level image based on tournament
+  const getLevelImage = () => {
+    if (tournamentId === 'mpa-dec-2025') {
+      return mpaLevelTable;
+    }
+    if (tournamentId?.startsWith('aims-')) {
+      return aimsLevelTable;
+    }
+    // Default for any other tournament (PFA, etc.)
+    return defaultLevelTable;
+  };
+
+  // Get tournament-specific title
+  const getTitle = () => {
+    if (tournamentId === 'mpa-dec-2025') {
+      return 'MPA Level Information';
+    }
+    return 'Level Information';
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto">
         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900">
-            Level Information
+            {getTitle()}
           </h3>
           <button 
             type="button" 
@@ -20,7 +42,7 @@ const LevelInfoModal = ({ onClose }) => {
         </div>
         <div className="p-6">
           <img 
-            src={levelTableImage} 
+            src={getLevelImage()} 
             alt="Level information table" 
             className="w-full h-auto" 
           />

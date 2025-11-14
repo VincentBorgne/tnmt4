@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PersonalInfoForm from './PersonalInfoForm';
 import RegistrationDetailsForm from './RegistrationDetailsForm';
+import RegistrationDetailsMPAForm from './RegistrationDetailsMPAForm';
 
 const TournamentRegistration = () => {
   const { tournamentId } = useParams<{ tournamentId: string }>();
@@ -25,6 +26,9 @@ const TournamentRegistration = () => {
     setStep(1);
   };
 
+  // Determine which registration form to use based on tournament slug
+  const isMPATournament = tournamentId === 'mpa-dec-2025';
+
   return (
     <div className="bg-white shadow rounded-lg">
       <div className="px-6 py-4 border-b border-gray-200">
@@ -35,13 +39,25 @@ const TournamentRegistration = () => {
       </div>
       <div className="p-6">
         {step === 1 ? (
-          <PersonalInfoForm onSubmit={handlePersonalDataSubmit} />
-        ) : (
-          <RegistrationDetailsForm 
-            personalData={personalData}
-            tournamentId={tournamentId}
-            onBack={handleBack}
+          <PersonalInfoForm 
+            onSubmit={handlePersonalDataSubmit}
+            tournamentSlug={tournamentId}
           />
+        ) : (
+          // Route to appropriate form based on tournament
+          isMPATournament ? (
+            <RegistrationDetailsMPAForm 
+              personalData={personalData}
+              tournamentId={tournamentId}
+              onBack={handleBack}
+            />
+          ) : (
+            <RegistrationDetailsForm 
+              personalData={personalData}
+              tournamentId={tournamentId}
+              onBack={handleBack}
+            />
+          )
         )}
       </div>
     </div>
