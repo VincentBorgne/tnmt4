@@ -33,7 +33,7 @@ const RegistrationConfirmationModal = ({
           <div className="p-4 bg-blue-50 rounded-md border border-blue-100">
             <p className="text-sm text-gray-700">
               <span className="font-medium">Note:</span> ScoreHub is collecting
-              fees on behalf of AIMSClub.
+              fees on behalf of the organizer.
             </p>
           </div>
         </div>

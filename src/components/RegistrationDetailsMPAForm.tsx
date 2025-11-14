@@ -143,7 +143,7 @@ const RegistrationDetailsMPAForm = ({
       
       setShowConfirmationModal(true);
       setTimeout(() => {
-        window.location.href = 'https://myadelassociation.com';
+        window.location.href = 'https://mypadelassociation.com';
       }, 3000);
     } catch (error) {
       console.error('Registration failed:', error);
