@@ -143,7 +143,7 @@ const RegistrationDetailsMPAForm = ({
       
       setShowConfirmationModal(true);
       setTimeout(() => {
-        window.location.href = 'https://mpamalaysia.com';
+        window.location.href = 'https://myadelassociation.com';
       }, 3000);
     } catch (error) {
       console.error('Registration failed:', error);
