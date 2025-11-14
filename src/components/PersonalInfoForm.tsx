@@ -188,7 +188,14 @@ const PersonalInfoForm = ({
             </p>}
         </div>
         <div>
-          <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-black bg-[#C4E42E] hover:bg-[#b3d129] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C4E42E]">
+          <button 
+            type="submit" 
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              isMalaysiaOnly
+                ? 'bg-[#162d54] text-white hover:bg-[#0f1f3a] focus:ring-[#162d54]'
+                : 'bg-[#C4E42E] text-black hover:bg-[#b3d129] focus:ring-[#C4E42E]'
+            }`}
+          >
             Continue to Registration
           </button>
         </div>

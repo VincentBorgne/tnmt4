@@ -434,8 +434,8 @@ const RegistrationDetailsMPAForm = ({
               className={`py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium ${
                 isSubmitting 
                   ? 'text-gray-500 bg-gray-300 cursor-not-allowed' 
-                  : 'text-black bg-[#C4E42E] hover:bg-[#b3d129]'
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C4E42E]`}
+                  : 'text-white bg-[#162d54] hover:bg-[#0f1f3a]'
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#162d54]`}
             >
               {isSubmitting ? 'Processing...' : 'Confirm Registration'}
             </button>
