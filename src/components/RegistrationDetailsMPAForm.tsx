@@ -28,7 +28,7 @@ const RegistrationDetailsMPAForm = ({
     formState: { errors }
   } = useForm({
     defaultValues: {
-      jerseys: [{ size: '', nameOnJersey: '', flag: 'my' }],
+      jerseys: [{ size: '', nameOnJersey: 'N/A', flag: 'my' }],
       termsAccepted: false
     }
   });
@@ -309,7 +309,7 @@ const RegistrationDetailsMPAForm = ({
                   </h4>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Size
@@ -326,33 +326,9 @@ const RegistrationDetailsMPAForm = ({
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Name on Jersey
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Display name"
-                      {...register(`jerseys.${index}.nameOnJersey`, { required: 'Name is required' })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      style={{ backgroundColor: '#ffffff' }}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Flag
-                    </label>
-                    <select
-                      {...register(`jerseys.${index}.flag`, { required: 'Flag is required' })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      style={{ backgroundColor: '#ffffff' }}
-                      disabled={true}
-                      value="my"
-                    >
-                      <option value="my">Malaysia</option>
-                    </select>
-                  </div>
+                  {/* Hidden fields with default values */}
+                  <input type="hidden" {...register(`jerseys.${index}.nameOnJersey`)} value="N/A" />
+                  <input type="hidden" {...register(`jerseys.${index}.flag`)} value="my" />
                 </div>
               </div>
             ))}
