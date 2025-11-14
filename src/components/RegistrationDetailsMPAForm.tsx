@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { InfoIcon, SearchIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 import countries from 'world-countries';
-import LevelInfoModal from './LevelInfoModal';
 import JerseySizesModal from './JerseySizesModal';
 import RegistrationConfirmationModal from './RegistrationConfirmationModal';
 import { registrationApi } from '../api/config';
@@ -30,9 +29,7 @@ const RegistrationDetailsMPAForm = ({
   } = useForm({
     defaultValues: {
       jerseys: [{ size: '', nameOnJersey: '', flag: 'my' }],
-      termsAccepted: false,
-      refundPolicy: false,
-      mediaConsent: false
+      termsAccepted: false
     }
   });
 
@@ -41,7 +38,6 @@ const RegistrationDetailsMPAForm = ({
     name: 'jerseys'
   });
 
-  const [showLevelInfo, setShowLevelInfo] = useState(false);
   const [showJerseySizesModal, setShowJerseySizesModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [selectedCategoryLevel, setSelectedCategoryLevel] = useState('');
@@ -115,7 +111,7 @@ const RegistrationDetailsMPAForm = ({
         gender: personalData.gender,
         birthdate: personalData.birthdate,
         nationality: personalData.nationality,
-        playerLevel: '3.0', // Default level for MPA
+        playerLevel: '9.0', // Default level for MPA (not collected)
         rankings: [], // No rankings for MPA
         totalAmount: totalFees,
         categories: [
@@ -127,13 +123,13 @@ const RegistrationDetailsMPAForm = ({
           }
         ],
         tournamentData: {
-          source: data.source || 'Direct',
+          source: 'Other', // Default for MPA (not collected)
           tournaments: [], // No tournament experience tracked
           communityTournaments: '',
           jerseys: data.jerseys.filter(j => j.size),
           termsAccepted: data.termsAccepted,
-          refundPolicy: data.refundPolicy,
-          mediaConsent: data.mediaConsent,
+          refundPolicy: true, // Auto-accepted (not shown)
+          mediaConsent: true, // Auto-accepted (not shown)
         }
       };
 
@@ -191,43 +187,6 @@ const RegistrationDetailsMPAForm = ({
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         
-        {/* Player Level Section */}
-        <div className="border-t border-gray-200 pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-700">Player Level</h3>
-            <button
-              type="button"
-              onClick={() => setShowLevelInfo(true)}
-              className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-            >
-              <InfoIcon className="h-4 w-4 mr-1" />
-              What's my level?
-            </button>
-          </div>
-          <div>
-            <label htmlFor="playerLevel" className="block text-sm font-medium text-gray-700">
-              Your Self-Assessment Level (0.0 - 7.0)
-            </label>
-            <input
-              id="playerLevel"
-              type="number"
-              step="0.5"
-              min="0"
-              max="7"
-              {...register('playerLevel', {
-                required: 'Player level is required',
-                min: { value: 0, message: 'Minimum level is 0.0' },
-                max: { value: 7, message: 'Maximum level is 7.0' }
-              })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-              style={{ backgroundColor: '#f3f4f6' }}
-            />
-            {errors.playerLevel && (
-              <p className="mt-1 text-sm text-red-600">{errors.playerLevel.message}</p>
-            )}
-          </div>
-        </div>
-
         {/* Category Selection */}
         <div className="border-t border-gray-200 pt-6">
           <h3 className="text-lg font-medium text-gray-700 mb-4">
@@ -327,29 +286,6 @@ const RegistrationDetailsMPAForm = ({
           </div>
         </div>
 
-        {/* How did you hear about us */}
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">
-            How did you hear about this tournament?
-          </h3>
-          <select
-            {...register('source', { required: 'Please let us know how you heard about us' })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-            style={{ backgroundColor: '#f3f4f6' }}
-          >
-            <option value="">Select source</option>
-            <option value="Instagram">Instagram</option>
-            <option value="Facebook">Facebook</option>
-            <option value="Friend">Friend</option>
-            <option value="Club">Club</option>
-            <option value="MPA Website">MPA Website</option>
-            <option value="Other">Other</option>
-          </select>
-          {errors.source && (
-            <p className="mt-1 text-sm text-red-600">{errors.source.message}</p>
-          )}
-        </div>
-
         {/* Jersey Section */}
         <div className="border-t border-gray-200 pt-6">
           <div className="flex items-center justify-between mb-4">
@@ -434,95 +370,42 @@ const RegistrationDetailsMPAForm = ({
 
         {/* Terms & Conditions Section */}
         <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-lg font-medium text-gray-700">
+          <h3 className="text-lg font-medium text-gray-700 mb-4">
             Terms & Conditions
           </h3>
-          <div className="mt-4 space-y-4">
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input 
-                  id="termsAccepted" 
-                  type="checkbox" 
-                  {...register('termsAccepted', {
-                    required: 'You must accept the terms and conditions'
-                  })} 
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="termsAccepted" className="font-medium text-gray-700">
-                  Terms and Conditions
-                </label>
-                <p className="text-gray-500">
-                  I confirm that all information provided is accurate and I agree to abide by the rules and regulations set by Malaysia Padel Association.
-                </p>
-                {errors.termsAccepted && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.termsAccepted.message}
-                  </p>
-                )}
-              </div>
+          <div className="flex items-start">
+            <div className="flex items-center h-5">
+              <input 
+                id="termsAccepted" 
+                type="checkbox" 
+                {...register('termsAccepted', {
+                  required: 'You must accept the terms and conditions'
+                })} 
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+              />
             </div>
-
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input 
-                  id="refundPolicy" 
-                  type="checkbox" 
-                  {...register('refundPolicy', {
-                    required: 'You must accept the refund policy'
-                  })} 
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="refundPolicy" className="font-medium text-gray-700">
-                  Refund Policy
-                </label>
-                <p className="text-gray-500">
-                  I understand that the tournament fee is non-refundable once confirmed, unless the event is canceled by the organizer.
+            <div className="ml-3 text-sm">
+              <label htmlFor="termsAccepted" className="font-medium text-gray-700">
+                I accept Malaysia Padel Association Terms & Conditions. 
+                <a 
+                  href="https://mypadelassociation.com/terms" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 ml-1"
+                >
+                  (see website)
+                </a>
+              </label>
+              {errors.termsAccepted && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.termsAccepted.message}
                 </p>
-                {errors.refundPolicy && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.refundPolicy.message}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Media Consent */}
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-lg font-medium text-gray-700">Media Consent</h3>
-          <div className="mt-4">
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input 
-                  id="mediaConsent" 
-                  type="checkbox" 
-                  {...register('mediaConsent', {
-                    required: 'Media consent is required'
-                  })} 
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="mediaConsent" className="font-medium text-gray-700">
-                  Media Permission
-                </label>
-                <p className="text-gray-500">
-                  I consent to photos and videos taken during the event being used by Malaysia Padel Association for promotional purposes.
-                </p>
-                {errors.mediaConsent && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.mediaConsent.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Media Consent - Removed */}
 
         {/* Total Fees and Submit */}
         <div className="border-t border-gray-200 pt-6 mt-6">
@@ -561,12 +444,6 @@ const RegistrationDetailsMPAForm = ({
       </form>
 
       {/* Modals */}
-      {showLevelInfo && (
-        <LevelInfoModal 
-          onClose={() => setShowLevelInfo(false)} 
-          tournamentId={tournamentId}
-        />
-      )}
       {showJerseySizesModal && (
         <JerseySizesModal onClose={() => setShowJerseySizesModal(false)} />
       )}
