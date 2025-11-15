@@ -19,6 +19,12 @@ interface Registration {
   team: Player[];
 }
 
+interface ReportData {
+  teams: Registration[];
+  availableCategories: string[];
+  availableLevels: string[];
+}
+
 // Team tile component
 const TeamTile = ({ team }: { team: Player[] }) => {
   const totalLevel = team.reduce((sum, player) => sum + (player.level || 0), 0);
@@ -61,7 +67,7 @@ const capitalize = (str: string): string => {
 
 const RegistrationReport = () => {
   const { tournamentId } = useParams<{ tournamentId: string }>();
-  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [reportData, setReportData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -79,7 +85,7 @@ const RegistrationReport = () => {
       try {
         setLoading(true);
         const data = await registrationApi.getReport(tournamentId);
-        setRegistrations(data);
+        setReportData(data);
         setError(null);
       } catch (err) {
         console.error('Failed to fetch registrations:', err);
@@ -92,15 +98,29 @@ const RegistrationReport = () => {
     fetchRegistrations();
   }, [tournamentId]);
 
+  // Auto-reset filters if they're no longer available
+  useEffect(() => {
+    if (!reportData) return;
+
+    if (categoryFilter && !reportData.availableCategories.includes(categoryFilter.toLowerCase())) {
+      setCategoryFilter('');
+    }
+    if (levelFilter && !reportData.availableLevels.includes(levelFilter.toLowerCase())) {
+      setLevelFilter('');
+    }
+  }, [reportData, categoryFilter, levelFilter]);
+
   // Filter registrations based on selected filters
   const filteredRegistrations = useMemo(() => {
-    return registrations.filter((registration) => {
+    if (!reportData) return [];
+    
+    return reportData.teams.filter((registration) => {
       const matchesCategory =
         !categoryFilter || registration.category.toLowerCase() === categoryFilter.toLowerCase();
       const matchesLevel = !levelFilter || registration.level.toLowerCase() === levelFilter.toLowerCase();
       return matchesCategory && matchesLevel;
     });
-  }, [registrations, categoryFilter, levelFilter]);
+  }, [reportData, categoryFilter, levelFilter]);
 
   // Group registrations by category and level
   const groupedRegistrations = useMemo(() => {
@@ -127,12 +147,12 @@ const RegistrationReport = () => {
     );
   }
 
-  if (error) {
+  if (error || !reportData) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="text-center py-8">
-            <p className="text-red-500">{error}</p>
+            <p className="text-red-500">{error || 'No data available'}</p>
           </div>
         </div>
       </div>
@@ -148,6 +168,7 @@ const RegistrationReport = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+          {/* Category Filters */}
           <div className="mb-4">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Category</h3>
             <div className="flex flex-wrap gap-2">
@@ -161,39 +182,23 @@ const RegistrationReport = () => {
               >
                 All
               </button>
-              <button
-                onClick={() => setCategoryFilter('Men')}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  categoryFilter === 'Men'
-                    ? 'bg-[#C4E42E] text-black'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Men
-              </button>
-              <button
-                onClick={() => setCategoryFilter('Women')}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  categoryFilter === 'Women'
-                    ? 'bg-[#C4E42E] text-black'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Women
-              </button>
-              <button
-                onClick={() => setCategoryFilter('Mixed')}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  categoryFilter === 'Mixed'
-                    ? 'bg-[#C4E42E] text-black'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Mixed
-              </button>
+              {reportData.availableCategories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setCategoryFilter(category)}
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    categoryFilter.toLowerCase() === category.toLowerCase()
+                      ? 'bg-[#C4E42E] text-black'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {capitalize(category)}
+                </button>
+              ))}
             </div>
           </div>
 
+          {/* Level Filters */}
           <div>
             <h3 className="text-sm font-medium text-gray-500 mb-2">Level</h3>
             <div className="flex flex-wrap gap-2">
@@ -207,46 +212,19 @@ const RegistrationReport = () => {
               >
                 All
               </button>
-              <button
-                onClick={() => setLevelFilter('Bronze')}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  levelFilter === 'Bronze'
-                    ? 'bg-[#C4E42E] text-black'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                🟤 Bronze
-              </button>
-              <button
-                onClick={() => setLevelFilter('Silver')}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  levelFilter === 'Silver'
-                    ? 'bg-[#C4E42E] text-black'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                ⚪️ Silver
-              </button>
-              <button
-                onClick={() => setLevelFilter('Platinum')}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  levelFilter === 'Platinum'
-                    ? 'bg-[#C4E42E] text-black'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                🔘 Platinum
-              </button>
-              <button
-                onClick={() => setLevelFilter('Elite')}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  levelFilter === 'Elite'
-                    ? 'bg-[#C4E42E] text-black'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                🔴 Elite
-              </button>
+              {reportData.availableLevels.map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setLevelFilter(level)}
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    levelFilter.toLowerCase() === level.toLowerCase()
+                      ? 'bg-[#C4E42E] text-black'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {capitalize(level)}
+                </button>
+              ))}
             </div>
           </div>
         </div>
