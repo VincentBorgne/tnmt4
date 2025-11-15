@@ -18,8 +18,15 @@ function AppContent() {
           {/* Registration routes - slug from iframe URL determines which tournament */}
           <Route path="/register/:tournamentId" element={<TournamentRegistration />} />
           
-          {/* Report route */}
-          <Route path="/registrations" element={<RegistrationReport />} />
+          {/* Admin Report route - no background wrapper needed */}
+          <Route 
+            path="/adminreport/:tournamentId" 
+            element={
+              <div className="min-h-screen">
+                <RegistrationReport />
+              </div>
+            } 
+          />
         </Routes>
       </div>
     </div>

@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { CheckCircleIcon, CreditCardIcon } from 'lucide-react';
 import Flag from './common/Flag';
-import { registrationApi, TOURNAMENT_ID } from '../api/config';
+import { registrationApi } from '../api/config';
 
 // Types
 interface Player {
@@ -59,18 +60,25 @@ const capitalize = (str: string): string => {
 };
 
 const RegistrationReport = () => {
+  const { tournamentId } = useParams<{ tournamentId: string }>();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [levelFilter, setLevelFilter] = useState('');
 
-  // Fetch registrations on mount
+  // Fetch registrations on mount or when tournamentId changes
   useEffect(() => {
     const fetchRegistrations = async () => {
+      if (!tournamentId) {
+        setError('No tournament ID provided');
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const data = await registrationApi.getReport(TOURNAMENT_ID);
+        const data = await registrationApi.getReport(tournamentId);
         setRegistrations(data);
         setError(null);
       } catch (err) {
@@ -82,7 +90,7 @@ const RegistrationReport = () => {
     };
 
     fetchRegistrations();
-  }, []);
+  }, [tournamentId]);
 
   // Filter registrations based on selected filters
   const filteredRegistrations = useMemo(() => {
@@ -135,7 +143,7 @@ const RegistrationReport = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          Registration Report
+          Registration Report - {tournamentId}
         </h1>
 
         {/* Filters */}
