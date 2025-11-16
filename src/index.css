@@ -3,4 +3,5 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 /* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
-@import 'flag-icons/css/flag-icons.min.css';
+/*@import 'flag-icons/css/flag-icons.min.css';*/
+@import url('https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css');
